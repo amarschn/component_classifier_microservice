@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  cq:
+    build: './image_generator'
+    image: 'cq_test'
+    ports:
+      - '5000:5000'
+    volumes:
+      - './image_generator:/app'
+    networks:
+      - back-tier
+  ai:
+    build: './image_classifier'
+    image: 'fastai_test'
+    ports:
+      - '5001:5000'
+    volumes:
+      - './image_classifier:/app'
+    networks:
+      - back-tier
+networks:
+  back-tier:
