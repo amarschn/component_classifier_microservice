@@ -67,7 +67,6 @@ def get_image_class(image_file):
     """Get classification of image file"""
     files = {'image': open(image_file, 'rb')}
     payload = {'filename': 'hello.png'}
-    print("hello    ")
     r = requests.post(URL, files=files, data=payload)
     return r.text
 
