@@ -15,9 +15,11 @@ RUN pip install --upgrade -r requirements.txt
 # Copy all files to the working directory in the container
 COPY . .
 
+ENV FLASK_APP app.py
+
 # Pass in a key and a value, attaching arbitrary metadata to the image
 LABEL maintainer="EG <eg@enclosuregenerator.com>" \
       version="1.0"
 
 # Defines the default command which will be executed once the docker image is run
-CMD flask run --host=0.0.0.0 --port=8000
+CMD ["gunicorn", "app:app", "-b", "0.0.0.0:8000"]

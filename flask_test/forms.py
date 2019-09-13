@@ -5,6 +5,3 @@ from wtforms import SubmitField
 class StepUploadForm(FlaskForm):
     step_file = FileField('STEP File', validators=[FileRequired()])
     submit = SubmitField('Upload')
-
-# def StepUploadForm():
-# 	print("hiya")

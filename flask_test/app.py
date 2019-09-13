@@ -5,7 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 import os
 
-CLASSIFIER_URL = 'http://localhost:5000/api/classify_step/'
+CLASSIFIER_URL = 'http://component_classifier_cq_1:5000/api/classify_step/'
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
@@ -28,5 +28,6 @@ def classify_step():
         payload = {'filename': 'hello.step'}
         r = requests.post(CLASSIFIER_URL, files=files, data=payload)
     return render_template('upload_step.html', title='Home',form=form)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True, threaded=True)
