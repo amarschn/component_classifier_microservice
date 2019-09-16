@@ -24,4 +24,4 @@ def classifiy_image():
     image = open_image(filename)
     learner = load_learner('.', 'export.pkl')
     prediction = learner.predict(image)[0]
-    return jsonify({'result': str(prediction)})
+    return jsonify(str(prediction))

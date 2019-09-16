@@ -10,6 +10,10 @@ from wand.image import Image
 from wand.color import Color
 import os
 import requests
+from PIL import Image as I
+from PIL import ImageDraw as D
+# import zipfile
+# import json
 
 
 VIEWS = {'x': (1, 0, 0),
@@ -80,10 +84,49 @@ def classify_images(image_files):
         classifications[image] = classification
     return classifications
 
+
 def classify_step(step_file):
     """Creates images of a step file and classifies them"""
     image_files = create_images(step_file)
     return classify_images(image_files)
+
+
+def classification_image(step_file):
+    """Creates an agglomerated image of all generated images, with the
+    classified image highlighted in red."""
+    image_files = create_images(step_file)
+    classifications = classify_images(image_files)
+
+    new_img = I.new('RGB', (1200, 200))
+    x_offset = 0
+
+    for i,im in enumerate(image_files):
+        img = I.open(im)
+        if classifications[im].strip()=='\"c\"':
+            draw = D.Draw(img)
+            draw.rectangle((0,0,200,2), fill=(255,0,0))
+            draw.rectangle((0,197,200,200), fill=(255,0,0))
+            
+        new_img.paste(img, (x_offset, 0))
+        x_offset += 200
+    new_img.save('classification.png')
+
+    return 'classification.png'
+
+
+# def classification_package(step_file):
+#     """Create a package containing all generated images and classifications"""
+#     image_files = create_images(step_file)
+#     classifications = classify_images(image_files)
+#     with open('classifications.json', 'w') as fp:
+#         json.dump(classifications, fp)
+
+#     with Zipfile('package.zip','w', zipfile.ZIP_DEFLATED) as zipf:
+#         for im in image_files:
+#             zipf.write(im)
+#         zipf.write('classifications.json')
+
+#     return 'package.zip'
 
 
 if __name__ == '__main__':

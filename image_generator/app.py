@@ -1,5 +1,5 @@
-from flask import Flask, jsonify, request
-from step_to_image import classify_step
+from flask import Flask, jsonify, request, send_file
+from step_to_image import classification_image
 
 app = Flask(__name__)
 
@@ -19,13 +19,10 @@ def step_classification():
         return jsonify("Failed to save STEP")
 
     try:
-        classifications = classify_step(filename)
-        # print("hiya")
+        f = classification_image(filename)
+        # classifications = classify_step(filename)
+        # print(type(classifications))
     except:
         return jsonify("Failed to classify STEP")
 
-    return jsonify(classifications)
-
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    return send_file(f, cache_timeout=0, mimetype='image/png')
