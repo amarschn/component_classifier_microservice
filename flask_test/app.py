@@ -12,6 +12,7 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.config['SECRET_KEY'] = 'hi'
+app.config['ALLOWED_EXTENSIONS'] = ['STEP', 'step']
 
 @app.route("/")
 def hello():
@@ -25,16 +26,18 @@ def classify_step():
         step = request.files['step_file']
         step_filename = secure_filename(step.filename).replace(' ','_')
         step.filename = os.path.join('.',step_filename)
-        step.save(step.filename)
-        files = {'step': open(step.filename, 'rb')}
-        payload = {'filename': 'hello.step'}
-        r = requests.post(CLASSIFIER_URL, files=files, data=payload, stream=True)
-        # print(r.content)
-        image = 'static/classification.png'
-        with open(image, 'wb') as img:
-            img.write(r.content)
-        
 
+        if allowed_file(step.filename, 'step'):
+            step.save(step.filename)
+            files = {'step': open(step.filename, 'rb')}
+            payload = {'filename': 'hello.step'}
+            r = requests.post(CLASSIFIER_URL, files=files, data=payload, stream=True)
+            image = 'static/classification.png'
+            with open(image, 'wb') as img:
+                img.write(r.content)
+        else:
+            flash('Invalid file type! Only STEP files can be uploaded.')
+        
     return render_template('upload_step.html', title='Home',form=form, image=image)
 
 
@@ -50,6 +53,17 @@ def add_header(response):
     response.headers['Expires'] = '-1'
     return response
 
+
+def allowed_file(filename, file_type):
+    """Determines whether filename has acceptable extension
+    """
+    extension = filename.rsplit('.', 1)[1].lower()
+    if ('.' in filename) and \
+       (extension in app.config['ALLOWED_EXTENSIONS']) and \
+       (extension == file_type):
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True, threaded=True)

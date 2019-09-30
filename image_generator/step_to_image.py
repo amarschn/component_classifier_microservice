@@ -106,7 +106,8 @@ def classification_image(step_file):
             draw = D.Draw(img)
             draw.rectangle((0,0,200,2), fill=(255,0,0))
             draw.rectangle((0,197,200,200), fill=(255,0,0))
-            
+            draw.rectangle((0,0,2,200), fill=(255,0,0))
+            draw.rectangle((197,0,200,200), fill=(255,0,0))
         new_img.paste(img, (x_offset, 0))
         x_offset += 200
     new_img.save('classification.png')
