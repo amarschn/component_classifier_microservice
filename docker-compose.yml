@@ -1,18 +1,6 @@
 version: '3'
 
 services:
-  web:
-    build: './flask_test'
-    image: 'flask_test'
-    command: python app.py
-    ports:
-      - '8000:8000'
-    networks:
-      - front-tier
-    volumes:
-      - './flask_test:/app'
-    environment:
-      FLASK_ENV: development
   cq:
     build: './image_generator'
     image: 'cq_test'
