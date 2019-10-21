@@ -1,18 +1,22 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, send_file
 from forms import StepUploadForm
 import requests
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 import os
 import shutil
+from uuid import uuid4
 
-CLASSIFIER_URL = 'http://component_classifier_cq_1:5000/api/classify_step/'
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.config['SECRET_KEY'] = 'hi'
 app.config['ALLOWED_EXTENSIONS'] = ['STEP', 'step']
+app.config['UPLOADED_STEP_FILES_DEST'] = os.getcwd() + '/step_uploads'
+# app.config['COMPONENT_CLASSIFIER_URL'] = 'http://68.183.158.9:5000/api/classify_step/'
+app.config['COMPONENT_CLASSIFIER_URL'] = 'http://component_classifier_cq_1:5000/api/classify_step/'
+
 
 @app.route("/")
 def hello():
@@ -26,13 +30,21 @@ def classify_step():
         step = request.files['step_file']
         step_filename = secure_filename(step.filename).replace(' ','_')
         step.filename = os.path.join('.',step_filename)
+        if not os.path.exists(app.config['UPLOADED_STEP_FILES_DEST']):
+            os.mkdir(app.config['UPLOADED_STEP_FILES_DEST'])
+        step.filename = os.path.join(app.config['UPLOADED_STEP_FILES_DEST'], step_filename)
+
 
         if allowed_file(step.filename, 'step'):
             step.save(step.filename)
             files = {'step': open(step.filename, 'rb')}
             payload = {'filename': 'hello.step'}
-            r = requests.post(CLASSIFIER_URL, files=files, data=payload, stream=True)
-            image = 'static/classification.png'
+            r = requests.post(app.config['COMPONENT_CLASSIFIER_URL'], files=files, data=payload, stream=True)
+
+            img_id = str(uuid4())
+            session['img_id'] = img_id
+            image = 'static/{}.png'.format(img_id)
+            
             with open(image, 'wb') as img:
                 img.write(r.content)
         else:
@@ -52,6 +64,12 @@ def add_header(response):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '-1'
     return response
+
+
+@app.route("/cc_image")
+def cc_image():
+    img_id = session['img_id']
+    return send_file(os.path.join(app.root_path,'static/{}.png'.format(img_id)), cache_timeout=0)
 
 
 def allowed_file(filename, file_type):
