@@ -12,3 +12,4 @@ six==1.10.0
 Wand==0.5.6
 Flask
 requests
+gunicorn==19.7

@@ -18,5 +18,6 @@ LABEL maintainer="EG <eg@enclosuregenerator.com>" \
 
 # CMD python test.py
 # Defines the default command which will be executed once the docker image is run
-CMD flask run --host=0.0.0.0 --port=5000
+# CMD flask run --host=0.0.0.0 --port=5000
+CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:5000", "app:app"]
 # CMD python app.py

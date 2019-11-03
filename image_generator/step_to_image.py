@@ -45,7 +45,6 @@ def create_images(connector_file, folder='ortho_views'):
             img.format = "png"
             img.trim()
             img.transform(resize='200x200')
-            # TODO: figure out a better way to add a border resulting in a 200x200 image
             width, height = img.size
             height_border = (200 - height)/2
             width_border = (200 - width)/2
@@ -114,20 +113,6 @@ def classification_image(step_file):
 
     return 'classification.png'
 
-
-# def classification_package(step_file):
-#     """Create a package containing all generated images and classifications"""
-#     image_files = create_images(step_file)
-#     classifications = classify_images(image_files)
-#     with open('classifications.json', 'w') as fp:
-#         json.dump(classifications, fp)
-
-#     with Zipfile('package.zip','w', zipfile.ZIP_DEFLATED) as zipf:
-#         for im in image_files:
-#             zipf.write(im)
-#         zipf.write('classifications.json')
-
-#     return 'package.zip'
 
 
 if __name__ == '__main__':

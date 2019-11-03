@@ -26,3 +26,6 @@ def step_classification():
         return jsonify("Failed to classify STEP")
 
     return send_file(f, cache_timeout=0, mimetype='image/png')
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', 5000, debug=True)

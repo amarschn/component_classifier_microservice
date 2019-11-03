@@ -25,3 +25,6 @@ def classifiy_image():
     learner = load_learner('.', 'export.pkl')
     prediction = learner.predict(image)[0]
     return jsonify(str(prediction))
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', 5000, debug=True)
